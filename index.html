@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+
+
+        #mainbox {
+            display: flex;
+            justify-content: center;
+            /* border: 1px solid black;  */
+            padding: 20px 10px;
+            background-color: white;
+            margin: auto;
+             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+             margin-top: -20px;
+             border-radius: 20px;
+        }
+
+        input{
+            width: 260px;
+            border-radius: 10px;
+        }
+
+        #container
+        {
+        display:grid;
+        justify-content: center;
+        border: 1px solid rgba(144, 144, 246, 0.808);
+        text-align: center;
+        margin-bottom: 20px;
+        border-radius: 25px;
+        width: 30%;
+        margin-left: 450px;
+        margin-top: 10px;
+    
+        }
+    
+
+        .gmap_canvas {
+            overflow:hidden;
+            background:none!important;
+            height:350px;
+            width:800px;
+            
+            }
+
+         .mapouter{
+            display: flex;
+            justify-content: center;
+            padding-left: 170px;
+
+         }   
+         body{
+            background-image: url("https://img.freepik.com/premium-photo/blue-sky-gradient-abstract-background_608068-1591.jpg");
+            background-repeat:no-repeat;
+           
+            background-size: 100%;
+      
+    }
+
+    /* h4{
+        border: 1px solid black;
+        padding: 5px 30px;
+        margin-top: 20px;
+        color: rgb(149, 15, 15);
+        border-radius: 10px;
+        background-color: white; */
+    
+       h2{
+        color:rgb(202, 23, 23);
+       }
+    h1{
+        margin-top: -15px;
+        margin-bottom: 30px;
+        
+    }
+  
+    /* #outerbox{
+        display: flex;
+        margin: auto;
+    } */
+    h5{
+        margin-top: -20px;
+    }
+ 
+
+
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#logo-container {
+    margin-right: 10px;
+}
+
+#logo {
+    width: 80px;
+    border-radius: 45px;
+}
+
+h1 {
+    color: black;
+    padding-top: 45px;
+}
+/* 
+#mainbox  {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+} */
+
+input{
+    height: 50px;
+}
+
+
+button {
+    background-color: rgb(149, 15, 15);
+    color: white;
+    padding: 7px 25px;
+    border-radius: 5px;
+    border: 0px;
+    margin-left: 1px;
+}
+  
+@media only screen and (max-width: 600px) {
+    /* Adjustments for smaller screens */
+    input{
+    height: 30px;
+    width: 98%;
+    text-align: center;
+}
+
+    body {
+        background-size: cover;
+        background-position: center;
+    }
+
+    #mainbox {
+        flex-direction: column; 
+        padding: 10px; 
+    }
+
+    #container {
+        width: 100%;
+        margin: 0 auto; 
+    }
+
+    .mapouter {
+        display: flex;
+        justify-content: center;
+        padding-left: 0px;
+    }
+
+    .gmap_canvas {
+        width: 100%; 
+        height: 300px; 
+        max-width: 600px; 
+    }
+
+    button {
+        margin-top: 10px; 
+        margin-left: 0; 
+    }
+
+    #header {
+        flex-direction: column; 
+        margin-bottom: 10px; 
+    }
+
+    #logo-container {
+        margin-right: 0; 
+        margin-bottom: 10px; 
+        text-align: center; 
+    }
+
+    #logo {
+        width: 60px; 
+        border-radius: 30px;  
+    }
+
+    h1 {
+        padding-top: 0;
+        text-align: center; 
+    }
+}
+  
+
+   
+
+    
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="logo-container">
+            <img id="logo" src="https://static.vecteezy.com/system/resources/previews/006/745/191/non_2x/sun-with-cloud-showing-partly-cloudy-icon-vector.jpg">
+        </div>
+        <h1>Weather App</h1>
+    </div>
+    <div id="mainbox">
+        <input placeholder="Enter city name" type="text" id="city">
+        <button onclick="searchWeather()">Search</button>
+    </div>
+
+    <div id="outerbox">
+        <div id="container"></div>
+        <div class="mapouter">
+            <div class="gmap_canvas">
+                <iframe 
+                width="600" 
+                height="500" 
+                id="gmap_canvas" 
+                frameborder="0" 
+                scrolling="no" 
+                marginheight="0" 
+                marginwidth="0"
+                ></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+ 
+        const api_key = "161d1f3528e5e151b8cd7d1be5f0d1ce";
+
+        async function searchWeather() {
+            let city = document.getElementById("city").value.trim();
+            if (city === "") {
+                alert("Please enter a city name.");
+                return;
+            }
+
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api_key}`;
+
+            try {
+                let res = await fetch(url);
+                let data = await res.json();
+                append(data);
+            } catch(err) {
+                console.log(err);
+            }
+        }
+
+        async function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showWeatherByLocation);
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+
+        async function showWeatherByLocation(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${api_key}`;
+
+            try {
+                let res = await fetch(url);
+                let data = await res.json();
+                append(data);
+            } catch(err) {
+                console.log(err);
+            }
+        }
+
+        function append(data) {
+            let container = document.getElementById("container");
+            container.innerHTML = null;
+
+            let city_name = document.createElement("h2");
+            city_name.innerText = data.name;
+
+            let celcius = document.createElement("h1");
+            celcius.innerText = Math.round(data.main.temp - 273.15) + "°C";
+
+            let humid = document.createElement("h5");
+            humid.innerText = "Humidity: " + data.main.humidity;
+
+            let wind = document.createElement("h5");
+            wind.innerText = "Wind: " +  data.wind.speed + "m/s WNW";
+
+            container.append(city_name, celcius, humid, wind);
+
+            let iframe = document.getElementById("gmap_canvas");
+            iframe.src = `https://maps.google.com/maps?q=${data.name}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+        }
+
+        // Ask for location when the page loads
+        window.onload = getLocation;
+    </script>
+</body>
+</html>
+
+
