@@ -249,27 +249,40 @@ button {
         }
 
         async function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showWeatherByLocation);
-            } else {
-                console.log("Geolocation is not supported by this browser.");
-            }
-        }
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showWeatherByLocation, showDefaultLocation);
+    } else {
+        console.log("Geolocation is not supported by this browser.");
+    }
+}
 
         async function showWeatherByLocation(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
 
-            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${api_key}`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${api_key}`;
 
-            try {
-                let res = await fetch(url);
-                let data = await res.json();
-                append(data);
-            } catch(err) {
-                console.log(err);
-            }
-        }
+    try {
+        let res = await fetch(url);
+        let data = await res.json();
+        append(data);
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+async function showDefaultLocation() {
+    const defaultCity = "Mumbai"; // You can change this to your desired default city
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${defaultCity}&appid=${api_key}`;
+
+    try {
+        let res = await fetch(url);
+        let data = await res.json();
+        append(data);
+    } catch(err) {
+        console.log(err);
+    }
+}
 
         function append(data) {
             let container = document.getElementById("container");
